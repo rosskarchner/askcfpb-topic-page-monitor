@@ -15,6 +15,11 @@ request_headers= dict(pragma="akamai-x-cache-on, akamai-x-cache-remote-on, akama
 
 
 def check_topic_page(url, topic):
+    """
+    given a topic and a URL, verify that they match.
+    If not, print all headers and checkbox states
+    """
+
     print "testing {topic} at {url}".format(topic=topic, url=url)
     response = requests.get(url, headers=request_headers)
     assert (response.status_code == 200)
@@ -24,10 +29,19 @@ def check_topic_page(url, topic):
     try:
         assert(h1.text.strip() == topic)
     except AssertionError:
-        exit_code = 1
         print "----"
         print "expected '{expected}', got '{recieved}'".format(expected=topic,
                                                                recieved=h1.text.strip())
+        # print all of the checkboxes
+        checkboxes = soup.select('input[type=checkbox]')
+        for checkbox in checkboxes:
+            checked = checkbox.attrs.get('checked')
+            if not checked:
+                print u"\u2610 {label}".format(label=checkbox.text.strip())
+            else:
+                print u"\u2611 {label}".format(label=checkbox.text.strip())
+
+        print
         for key, value in response.headers.items():
             print "{key}: {value}".format(key=key, value=value)
 
@@ -37,4 +51,3 @@ for topic_link in home_soup.select('.category_summary h2 a'):
     url = urljoin(askcfpb_home, topic_link.attrs['href'])
     topic = topic_link.text.strip()
     check_topic_page(url, topic)
-
