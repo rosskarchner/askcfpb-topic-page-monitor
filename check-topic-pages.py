@@ -37,9 +37,9 @@ def check_topic_page(url, topic):
         for checkbox in checkboxes:
             checked = checkbox.attrs.get('checked')
             if not checked:
-                print u"\u2610 {label}".format(label=checkbox.text.strip())
+                print u"unchecked: {label}".format(label=checkbox.text.strip())
             else:
-                print u"\u2611 {label}".format(label=checkbox.text.strip())
+                print u"checked: {label}".format(label=checkbox.text.strip())
 
         print
         for key, value in response.headers.items():
